@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Order, OrderItem
-
-
+from django.core.exceptions import ValidationError
+from .forms import OrderAdminForm
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
@@ -17,6 +17,7 @@ class OrderAdmin(admin.ModelAdmin):
         'status',
         'created_at',
     )
+    form = OrderAdminForm
 
     list_filter = ('status', 'created_at')
 

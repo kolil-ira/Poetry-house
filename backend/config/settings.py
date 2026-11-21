@@ -21,9 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -42,7 +41,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "accounts",
     'poetry',
-    'orders'
+    'orders',
+    'django_filters',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -108,12 +109,25 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Django REST Framework configuration
 REST_FRAMEWORK = {
+  'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    'DEFAULT_FILTER_BACKENDS': [
+    'django_filters.rest_framework.DjangoFilterBackend',
+    'rest_framework.filters.SearchFilter',
+    'rest_framework.filters.OrderingFilter',
+
+
+],
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    
 }
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -188,4 +202,23 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'The Poetry House API',
+    'DESCRIPTION': 'API for poetry publishing, book browsing and ordering.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    # 'COMPONENTS': {
+    #     'securitySchemes': {
+    #         'BearerAuth': {
+    #             'type': 'http',
+    #             'scheme': 'bearer',
+    #             'bearerFormat': 'JWT',
+    #         }
+    #     }
+    # },
+    # 'SECURITY': [
+    # {'BearerAuth': []},
+# ],
 }

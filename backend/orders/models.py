@@ -37,6 +37,18 @@ class Order(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    @staticmethod
+    def is_valid_status_transition(current_status, new_status):
+        allowed_transitions = {
+            'PENDING': ['CONFIRMED', 'CANCELLED'],
+            'CONFIRMED': ['SHIPPED'],
+            'SHIPPED': ['DELIVERED'],
+            'DELIVERED': [],
+            'CANCELLED': [],
+        }
+
+        return new_status in allowed_transitions.get(current_status, [])
 
     def __str__(self):
         return f"Order #{self.id} - {self.reader.username}"

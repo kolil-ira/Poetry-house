@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Poem, Category , Book
-
+from decimal import Decimal
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,7 +60,7 @@ class BookSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(
         max_digits=10,
         decimal_places=2,
-        min_value=0.01
+        min_value=Decimal('0.01')
     )
     stock = serializers.IntegerField(
     min_value=0

@@ -1,9 +1,10 @@
 from django.db.models import Q
 from django.utils import timezone
-
+from .filters import BookFilter
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Poem, Category ,Book
 from .serializers import PoemSerializer, CategorySerializer,BookSerializer
 from .permissions import IsAuthorOrReadOnly ,IsBookOwnerOrReadOnly
@@ -12,6 +13,30 @@ from .permissions import IsAuthorOrReadOnly ,IsBookOwnerOrReadOnly
 class PoemViewSet(viewsets.ModelViewSet):
     serializer_class = PoemSerializer
     permission_classes = [AllowAny, IsAuthorOrReadOnly]
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    search_fields = [
+        'title',
+        'content',
+        'author__username',
+    ]
+
+    filterset_fields = [
+        'category',
+        'status',
+    ]
+
+    ordering_fields = [
+        'created_at',
+        'published_at',
+        'title',
+    ]
+
+    ordering = ['-created_at']
 
     def get_queryset(self):
         user = self.request.user
@@ -62,6 +87,27 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     permission_classes = [AllowAny, IsBookOwnerOrReadOnly]
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    search_fields = [
+        'title',
+        'description',
+        'author__username',
+    ]
+    
+    filterset_class = BookFilter
+
+    ordering_fields = [
+        'price',
+        'created_at',
+        'title',
+    ]
+
+    ordering = ['-created_at']
 
     def get_queryset(self):
         user = self.request.user

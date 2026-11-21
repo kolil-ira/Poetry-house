@@ -1,18 +1,22 @@
-
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from .serializers import UserProfileSerializer
+from drf_spectacular.utils import extend_schema, extend_schema_view
+
 from .models import User
-from .serializers import PublicAuthorSerializer
-from .serializers import EmailLoginSerializer
 from .serializers import (
+    UserProfileSerializer,
+    PublicAuthorSerializer,
+    EmailLoginSerializer,
     ReaderRegistrationSerializer,
     AuthorRegistrationSerializer,
 )
-
+@extend_schema_view(
+    post=extend_schema(auth=[])
+)
+class ReaderRegistrationView(generics.CreateAPIView):
+    serializer_class = ReaderRegistrationSerializer
+    permission_classes = [AllowAny] 
 
 class ReaderRegistrationView(generics.CreateAPIView):
     serializer_class = ReaderRegistrationSerializer
